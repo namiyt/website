@@ -7,125 +7,155 @@ canvas.height = window.innerHeight;
 
 const c = canvas.getContext("2d");
 
-// class Circle {
-//     constructor (x, y, dx, dy, radius) {
-//         this.x = x;
-//         this.y = y;
-//         this.dx = dx;
-// 	    this.dy = dy;
-//         this.radius = radius;
-//     }
-
-//     drawCircle() {
-//         c.beginPath();
-//         c.arc(this.x, this.y, this.radius, Math.PI * 2, false);
-//         c.stroke();
-//     }
-
-//     update() {
-//         if ((this.x + this.radius) > innerWidth || (this.x - this.radius) < 0) {
-// 			this.dx = -this.dx;
-// 		}
-
-// 		if ((this.y + this.radius) > innerHeight || (this.y - this.radius) < 0) {
-// 			this.dy = -this.dy;
-//         }
-        
-//         this.x += this.dx;
-//         this.y += this.dy;
-        
-//         this.drawCircle();
-//     }
-// }
-
-// const circleArray = [];
-// for (let i = 0; i < numberOfCircles; i++) {
-// 	let x	= Math.random() * (innerWidth - radius * 2) + radius;
-// 	let y 	= Math.random() * (innerHeight - radius * 2) + radius;
-// 	let dx 	= (Math.random() - 0.5);	
-// 	let dy 	= (Math.random() - 0.5);
-	
-// 	circleArray.push(new Circle(x, y, dx, dy, radius));
-// }
-
-// function animatation() {
-//     c.clearRect(0, 0, innerWidth, innerHeight);
-
-//     for (let i = 0; i < circleArray.length; i++) {
-//         circleArray[i].update();
-//         c.stroke();
-//     }
-
-//     requestAnimationFrame(animatation)
-// }
-
-// animatation();
-
-class Node {
-    constructor(val, priority) {
-        this.value = val;
-        this.priority = priority;
-        this.next = null;
+// User defined class 
+// to store element and its priority 
+class QElement { 
+    constructor(element, priority) 
+    { 
+        this.element = element; 
+        this.priority = priority; 
+    } 
+} 
+  
+// PriorityQueue class 
+class PriorityQueue { 
+  
+    // An array is used to implement priority 
+    constructor() 
+    { 
+        this.items = []; 
+    } 
+  
+    // functions to be implemented 
+    // enqueue function to add element 
+    // to the queue as per priority 
+    enqueue(element, priority) 
+    { 
+        // creating object from queue element 
+        var qElement = new QElement(element, priority); 
+        var contain = false; 
+      
+        // iterating through the entire 
+        // item array to add element at the 
+        // correct location of the Queue 
+        for (var i = 0; i < this.items.length; i++) { 
+            if (this.items[i].priority > qElement.priority) { 
+                // Once the correct location is found it is 
+                // enqueued 
+                this.items.splice(i, 0, qElement); 
+                contain = true; 
+                break; 
+            } 
+        } 
+      
+        // if the element have the highest priority 
+        // it is added at the end of the queue 
+        if (!contain) { 
+            this.items.push(qElement); 
+        } 
+    } 
+    // dequeue method to remove 
+    // element from the queue 
+    dequeue() 
+    { 
+        // return the dequeued element 
+        // and remove it. 
+        // if the queue is empty 
+        // returns Underflow 
+        if (this.isEmpty()) 
+            return "Underflow"; 
+        return this.items.shift(); 
+    }  
+    // front function 
+    front() 
+    { 
+        // returns the highest priority element 
+        // in the Priority queue without removing it. 
+        if (this.isEmpty()) 
+            return "No elements in Queue"; 
+        return this.items[0]; 
+    }
+    // rear function 
+    rear() 
+    { 
+        // returns the lowest priorty 
+        // element of the queue 
+        if (this.isEmpty()) 
+            return "No elements in Queue"; 
+        return this.items[this.items.length - 1]; 
+    } 
+    // isEmpty function 
+    isEmpty() 
+    { 
+        // return true if the queue is empty. 
+        return this.items.length == 0; 
+    }
+    // printQueue function 
+    // prints all the element of the queue 
+    printPQueue() 
+    { 
+        var str = ""; 
+        for (var i = 0; i < this.items.length; i++) 
+            str += this.items[i].element + " "; 
+        return str; 
+    }
+    getKClosest(n) {
+        return this.items.slice(0, n)
     }
 }
 
-class PriorityQueue {
-    constructor() {
-        this.heap = [null]
+class Circle {
+    constructor (x, y, dx, dy, radius) {
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+	    this.dy = dy;
+        this.radius = radius;
     }
 
-    insert(value, priority) {
-        const newNode = new Node(value, priority);
-        this.heap.push(newNode);
-        let currentNodeIdx = this.heap.length - 1;
-        let currentNodeParentIdx = Math.floor(currentNodeIdx / 2);
-        while (
-            this.heap[currentNodeParentIdx] &&
-            newNode.priority > this.heap[currentNodeParentIdx].priority
-        ) {
-            const parent = this.heap[currentNodeParentIdx];
-            this.heap[currentNodeParentIdx] = newNode;
-            this.heap[currentNodeIdx] = parent;
-            currentNodeIdx = currentNodeParentIdx;
-            currentNodeParentIdx = Math.floor(currentNodeIdx / 2);
+    drawCircle() {
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, Math.PI * 2, false);
+        c.stroke();
+    }
+
+    update() {
+        if ((this.x + this.radius) > innerWidth || (this.x - this.radius) < 0) {
+			this.dx = -this.dx;
+		}
+
+		if ((this.y + this.radius) > innerHeight || (this.y - this.radius) < 0) {
+			this.dy = -this.dy;
         }
+        
+        this.x += this.dx;
+        this.y += this.dy;
+        
+        this.drawCircle();
     }
 
-    remove() {
-        if (this.heap.length < 3) {
-          const toReturn = this.heap.pop();
-          this.heap[0] = null;
-          return toReturn;
+    drawLineToNearestCircle(arr) {
+        c.beginPath();
+        for (let i = 0; i < arr.length; i++) {
+            c.moveTo(this.x, this.y);
+            c.lineTo(arr[i][2], arr[i][1]);
         }
-        const toRemove = this.heap[1];
-        this.heap[1] = this.heap.pop();
-        let currentIdx = 1;
-        let [left, right] = [2*currentIdx, 2*currentIdx + 1];
-        let currentChildIdx = this.heap[right] && this.heap[right].priority >= this.heap[left].priority ? right : left;
-        while (this.heap[currentChildIdx] && this.heap[currentIdx].priority <= this.heap[currentChildIdx].priority) {
-          let currentNode = this.heap[currentIdx]
-          let currentChildNode = this.heap[currentChildIdx];
-          this.heap[currentChildIdx] = currentNode;
-          this.heap[currentIdx] = currentChildNode;
-        }
-        return toRemove;
-      }
-
-    front() {
-        if (this.isEmpty()) {
-            return "No element in Queue"
-        }
-        return this.heap[0];
+        c.stroke();
     }
 
-    isEmpty() {
-        return this.heap.length === 0;
+    getCoord() {
+        return [this.x, this.y];
     }
+}
 
-
-    getKClosest(n) {
-        return this.heap.slice(0, n);
-    }
+const circleArray = [];
+for (let i = 0; i < numberOfCircles; i++) {
+	let x	= Math.random() * (innerWidth - radius * 2) + radius;
+	let y 	= Math.random() * (innerHeight - radius * 2) + radius;
+	let dx 	= (Math.random() - 0.5);	
+	let dy 	= (Math.random() - 0.5);
+	
+	circleArray.push(new Circle(x, y, dx, dy, radius));
 }
 
 // let points = [[-2,-4], [0,-2], [-1, 0], [3,-5], [-2,-3], [3,2]]
@@ -144,9 +174,21 @@ function closest(points, k) {
 
     const pq = new PriorityQueue();
     for (let i = 0; i < points.length; i++) {
-        pq.insert(points[i], points[i][2]);
+        pq.enqueue(points[i], points[i][2]);
     }
     return pq.getKClosest(k);    
 }
 
-console.log(closest(points, 2))
+function animatation() {
+    c.clearRect(0, 0, innerWidth, innerHeight);
+
+    for (let i = 0; i < circleArray.length; i++) {
+        circleArray[i].update();
+        const closestCircle = closest()
+        c.stroke();
+    }
+
+    requestAnimationFrame(animatation)
+}
+
+animatation();

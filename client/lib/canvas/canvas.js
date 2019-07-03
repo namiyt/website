@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
-const radius = 5;
-const numberOfCircles = 10;
+const radius = 1;
+const numberOfCircles = 1000;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -75,29 +75,11 @@ class PriorityQueue {
             return "No elements in Queue"; 
         return this.items[0]; 
     }
-    // rear function 
-    rear() 
-    { 
-        // returns the lowest priorty 
-        // element of the queue 
-        if (this.isEmpty()) 
-            return "No elements in Queue"; 
-        return this.items[this.items.length - 1]; 
-    } 
     // isEmpty function 
     isEmpty() 
     { 
         // return true if the queue is empty. 
         return this.items.length == 0; 
-    }
-    // printQueue function 
-    // prints all the element of the queue 
-    printPQueue() 
-    { 
-        var str = ""; 
-        for (var i = 0; i < this.items.length; i++) 
-            str += this.items[i].element + " "; 
-        return str; 
     }
     getKClosest(n) {
         return this.items.slice(0, n)
@@ -108,8 +90,8 @@ class Circle {
     constructor (x, y, dx, dy, radius) {
         this.x = x;
         this.y = y;
-        this.dx = dx;
-	    this.dy = dy;
+        this.dx = dx * 2;
+	    this.dy = dy * 2;
         this.radius = radius;
     }
 
@@ -119,7 +101,19 @@ class Circle {
         c.stroke();
     }
 
-    update() {
+    drawLineToNearestCircle(arr) {
+        c.beginPath();
+        for (let i = 0; i < arr.length; i++) {
+            c.moveTo(this.x, this.y);
+            console.log(arr[i].element)
+            const [c1, c2] = arr[i].element.getCoord();
+            c.lineTo(c1, c2);
+        }
+        c.stroke();
+    }
+
+
+    update(arr) {
         if ((this.x + this.radius) > innerWidth || (this.x - this.radius) < 0) {
 			this.dx = -this.dx;
 		}
@@ -132,15 +126,7 @@ class Circle {
         this.y += this.dy;
         
         this.drawCircle();
-    }
-
-    drawLineToNearestCircle(arr) {
-        c.beginPath();
-        for (let i = 0; i < arr.length; i++) {
-            c.moveTo(this.x, this.y);
-            c.lineTo(arr[i][2], arr[i][1]);
-        }
-        c.stroke();
+        this.drawLineToNearestCircle(arr)
     }
 
     getCoord() {
@@ -159,22 +145,25 @@ for (let i = 0; i < numberOfCircles; i++) {
 }
 
 // let points = [[-2,-4], [0,-2], [-1, 0], [3,-5], [-2,-3], [3,2]]
-let points = [[3,3],[5,-1],[-2,4]]
+// let points = [[3,3],[5,-1],[-2,4]]
 
-function distanceToOrigin(x, y) {
-    return Math.sqrt((x)**2 + (y)**2)
+function distanceToOrigin(cx, cy, x, y) {
+    return Math.sqrt((x - cx)**2 + (y - cy)**2)
 }
 
-function closest(points, k) {
+function closest(points, k, ox, oy) {
     // returns point [x, y, distance to origin]
-    for (let i of points) {
-        let distance = distanceToOrigin(i[0], i[1]);
-        i.push(distance);
-    }
+    // for (let i of points) {
+    //     let distance = distanceToOrigin(cx, cy, i[0], i[1]);
+    //     i.push(distance);
+    // }
 
     const pq = new PriorityQueue();
     for (let i = 0; i < points.length; i++) {
-        pq.enqueue(points[i], points[i][2]);
+        const [cx, cy] = points[i].getCoord();
+        let distance = distanceToOrigin(ox, oy, cx, cy)
+        console.log(distance)
+        pq.enqueue(points[i], distance);
     }
     return pq.getKClosest(k);    
 }
@@ -183,8 +172,10 @@ function animatation() {
     c.clearRect(0, 0, innerWidth, innerHeight);
 
     for (let i = 0; i < circleArray.length; i++) {
-        circleArray[i].update();
-        const closestCircle = closest()
+        const [ox, oy] = circleArray[i].getCoord();
+        const closestCircle = closest(circleArray, 3, ox, oy);
+        console.log(closestCircle)
+        circleArray[i].update(closestCircle);
         c.stroke();
     }
 

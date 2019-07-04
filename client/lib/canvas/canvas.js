@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
 const radius = 1;
-const numberOfCircles = 1000;
+const numberOfCircles = 100;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -81,8 +81,8 @@ class PriorityQueue {
         // return true if the queue is empty. 
         return this.items.length == 0; 
     }
-    getKClosest(n) {
-        return this.items.slice(0, n)
+    getQueue() {
+        return this.items;
     }
 }
 
@@ -105,7 +105,6 @@ class Circle {
         c.beginPath();
         for (let i = 0; i < arr.length; i++) {
             c.moveTo(this.x, this.y);
-            console.log(arr[i].element)
             const [c1, c2] = arr[i].element.getCoord();
             c.lineTo(c1, c2);
         }
@@ -113,7 +112,7 @@ class Circle {
     }
 
 
-    update(arr) {
+    update() {
         if ((this.x + this.radius) > innerWidth || (this.x - this.radius) < 0) {
 			this.dx = -this.dx;
 		}
@@ -126,7 +125,7 @@ class Circle {
         this.y += this.dy;
         
         this.drawCircle();
-        this.drawLineToNearestCircle(arr)
+        // this.drawLineToNearestCircle(arr)
     }
 
     getCoord() {
@@ -134,30 +133,25 @@ class Circle {
     }
 }
 
+const pq = new PriorityQueue();
 const circleArray = [];
 for (let i = 0; i < numberOfCircles; i++) {
 	let x	= Math.random() * (innerWidth - radius * 2) + radius;
 	let y 	= Math.random() * (innerHeight - radius * 2) + radius;
 	let dx 	= (Math.random() - 0.5);	
 	let dy 	= (Math.random() - 0.5);
-	
-	circleArray.push(new Circle(x, y, dx, dy, radius));
+    
+    let distance = distanceToOrigin(x, y)
+    const circle = new Circle(x, y, dx, dy, radius);
+    pq.enqueue(circle, distance);
+	circleArray.push(circle);
 }
 
-// let points = [[-2,-4], [0,-2], [-1, 0], [3,-5], [-2,-3], [3,2]]
-// let points = [[3,3],[5,-1],[-2,4]]
-
-function distanceToOrigin(cx, cy, x, y) {
-    return Math.sqrt((x - cx)**2 + (y - cy)**2)
+function distanceToOrigin(x, y) {
+    return Math.sqrt((x)**2 + (y)**2)
 }
 
 function closest(points, k, ox, oy) {
-    // returns point [x, y, distance to origin]
-    // for (let i of points) {
-    //     let distance = distanceToOrigin(cx, cy, i[0], i[1]);
-    //     i.push(distance);
-    // }
-
     const pq = new PriorityQueue();
     for (let i = 0; i < points.length; i++) {
         const [cx, cy] = points[i].getCoord();
@@ -170,12 +164,26 @@ function closest(points, k, ox, oy) {
 
 function animatation() {
     c.clearRect(0, 0, innerWidth, innerHeight);
-
+    
+    const circleQueue = pq.getQueue();
+    
     for (let i = 0; i < circleArray.length; i++) {
-        const [ox, oy] = circleArray[i].getCoord();
-        const closestCircle = closest(circleArray, 3, ox, oy);
-        console.log(closestCircle)
-        circleArray[i].update(closestCircle);
+        if (i % 3 == 0) {
+            console.log(circleQueue[i])
+            console.log(circleQueue[i+1])
+            console.log(circleQueue[i+2])
+            const [coordX, coordY] = circleQueue[i].element.getCoord();
+            const [coordX1, coordY1] = circleQueue[i+1].element.getCoord();
+            const [coordX2, coordY2] = circleQueue[i+2].element.getCoord();
+
+            c.beginPath();
+            c.moveTo(coordX, coordY);
+            c.lineTo(coordX1, coordY1);
+            c.moveTo(coordX, coordY);
+            c.lineTo(coordX2, coordY2);
+        }
+
+        circleArray[i].update();
         c.stroke();
     }
 

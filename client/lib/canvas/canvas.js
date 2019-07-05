@@ -57,17 +57,19 @@ class PriorityQueue {
 }
 
 class Circle {
-  constructor(x, y, dx, dy, radius) {
+  constructor(x, y, dx, dy, radius, color) {
     this.x = x;
     this.y = y;
     this.dx = dx * 2;
     this.dy = dy * 2;
     this.radius = radius;
+    this.color = color;
   }
 
   drawCircle() {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, Math.PI * 2, false);
+    c.strokeStyle = this.color;
     c.stroke();
   }
 
@@ -113,6 +115,13 @@ class Circle {
   }
 }
 
+function getRndColor() {
+    var r = 255*Math.random()|0,
+        g = 255*Math.random()|0,
+        b = 255*Math.random()|0;
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
 const circleArray = [];
 for (let i = 0; i < numberOfCircles; i++) {
   let x = Math.random() * (innerWidth - radius * 2) + radius;
@@ -120,7 +129,11 @@ for (let i = 0; i < numberOfCircles; i++) {
   let dx = Math.random() - 0.5;
   let dy = Math.random() - 0.5;
 
-  const circle = new Circle(x, y, dx, dy, radius);
+  let color = getRndColor();
+
+  console.log(color)
+
+  const circle = new Circle(x, y, dx, dy, radius, color);
   circleArray.push(circle);
 }
 

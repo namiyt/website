@@ -2,9 +2,8 @@ const canvas = document.getElementById('canvas');
 const radius = 1;
 const numberOfCircles = 250;
 
-canvas.width = document.body.clientWidth;
-console.log(document.body.scrollHeight);
-canvas.height = document.body.scrollHeight;
+canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 const c = canvas.getContext('2d');
 
@@ -116,10 +115,10 @@ class Circle {
 }
 
 function getRndColor() {
-    var r = 255*Math.random()|0,
-        g = 255*Math.random()|0,
-        b = 255*Math.random()|0;
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  var r = (255 * Math.random()) | 0,
+    g = (255 * Math.random()) | 0,
+    b = (255 * Math.random()) | 0;
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
 }
 
 const circleArray = [];
@@ -130,8 +129,6 @@ for (let i = 0; i < numberOfCircles; i++) {
   let dy = Math.random() - 0.5;
 
   let color = getRndColor();
-
-  console.log(color)
 
   const circle = new Circle(x, y, dx, dy, radius, color);
   circleArray.push(circle);
